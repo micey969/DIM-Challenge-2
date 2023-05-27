@@ -1,0 +1,1452 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "66cc7425",
+   "metadata": {
+    "_execution_state": "idle",
+    "_uuid": "051d70d956493feee0c6d64651c6a088724dca2a",
+    "papermill": {
+     "duration": 0.009046,
+     "end_time": "2023-05-27T20:04:17.414214",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:17.405168",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# Scenario\n",
+    "\n",
+    "You are a sports data analyst and you have been tasked with summarizing data from the matches from a previous EuroCup. Your manager would like the following questions answered."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "98106084",
+   "metadata": {
+    "papermill": {
+     "duration": 0.00763,
+     "end_time": "2023-05-27T20:04:17.429791",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:17.422161",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Load Packages"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "cefe931a",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-05-27T20:04:17.450522Z",
+     "iopub.status.busy": "2023-05-27T20:04:17.448052Z",
+     "iopub.status.idle": "2023-05-27T20:04:18.910872Z",
+     "shell.execute_reply": "2023-05-27T20:04:18.908431Z"
+    },
+    "papermill": {
+     "duration": 1.477137,
+     "end_time": "2023-05-27T20:04:18.914707",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:17.437570",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "── \u001b[1mAttaching core tidyverse packages\u001b[22m ──────────────────────── tidyverse 2.0.0 ──\n",
+      "\u001b[32m✔\u001b[39m \u001b[34mdplyr    \u001b[39m 1.1.2     \u001b[32m✔\u001b[39m \u001b[34mreadr    \u001b[39m 2.1.4\n",
+      "\u001b[32m✔\u001b[39m \u001b[34mforcats  \u001b[39m 1.0.0     \u001b[32m✔\u001b[39m \u001b[34mstringr  \u001b[39m 1.5.0\n",
+      "\u001b[32m✔\u001b[39m \u001b[34mggplot2  \u001b[39m 3.4.2     \u001b[32m✔\u001b[39m \u001b[34mtibble   \u001b[39m 3.2.1\n",
+      "\u001b[32m✔\u001b[39m \u001b[34mlubridate\u001b[39m 1.9.2     \u001b[32m✔\u001b[39m \u001b[34mtidyr    \u001b[39m 1.3.0\n",
+      "\u001b[32m✔\u001b[39m \u001b[34mpurrr    \u001b[39m 1.0.1     \n",
+      "── \u001b[1mConflicts\u001b[22m ────────────────────────────────────────── tidyverse_conflicts() ──\n",
+      "\u001b[31m✖\u001b[39m \u001b[34mdplyr\u001b[39m::\u001b[32mfilter()\u001b[39m masks \u001b[34mstats\u001b[39m::filter()\n",
+      "\u001b[31m✖\u001b[39m \u001b[34mdplyr\u001b[39m::\u001b[32mlag()\u001b[39m    masks \u001b[34mstats\u001b[39m::lag()\n",
+      "\u001b[36mℹ\u001b[39m Use the conflicted package (\u001b[3m\u001b[34m<http://conflicted.r-lib.org/>\u001b[39m\u001b[23m) to force all conflicts to become errors\n"
+     ]
+    }
+   ],
+   "source": [
+    "library(tidyverse)\n",
+    "library(readr)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9573bcf2",
+   "metadata": {
+    "papermill": {
+     "duration": 0.008338,
+     "end_time": "2023-05-27T20:04:18.932171",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:18.923833",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Load Data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "7513175d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-05-27T20:04:18.994408Z",
+     "iopub.status.busy": "2023-05-27T20:04:18.952913Z",
+     "iopub.status.idle": "2023-05-27T20:04:19.581657Z",
+     "shell.execute_reply": "2023-05-27T20:04:19.579437Z"
+    },
+    "papermill": {
+     "duration": 0.644449,
+     "end_time": "2023-05-27T20:04:19.584724",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:18.940275",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "url <- \"https://raw.githubusercontent.com/guipsamora/pandas_exercises/master/02_Filtering_%26_Sorting/Euro12/Euro_2012_stats_TEAM.csv\"\n",
+    "stats <- read.csv(url)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f66122c0",
+   "metadata": {
+    "papermill": {
+     "duration": 0.007679,
+     "end_time": "2023-05-27T20:04:19.600609",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:19.592930",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## View Data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "18c71f88",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-05-27T20:04:19.620122Z",
+     "iopub.status.busy": "2023-05-27T20:04:19.618389Z",
+     "iopub.status.idle": "2023-05-27T20:04:19.696913Z",
+     "shell.execute_reply": "2023-05-27T20:04:19.694857Z"
+    },
+    "papermill": {
+     "duration": 0.091199,
+     "end_time": "2023-05-27T20:04:19.699690",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:19.608491",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<table class=\"dataframe\">\n",
+       "<caption>A data.frame: 16 × 35</caption>\n",
+       "<thead>\n",
+       "\t<tr><th scope=col>Team</th><th scope=col>Goals</th><th scope=col>Shots.on.target</th><th scope=col>Shots.off.target</th><th scope=col>Shooting.Accuracy</th><th scope=col>X..Goals.to.shots</th><th scope=col>Total.shots..inc..Blocked.</th><th scope=col>Hit.Woodwork</th><th scope=col>Penalty.goals</th><th scope=col>Penalties.not.scored</th><th scope=col>⋯</th><th scope=col>Saves.made</th><th scope=col>Saves.to.shots.ratio</th><th scope=col>Fouls.Won</th><th scope=col>Fouls.Conceded</th><th scope=col>Offsides</th><th scope=col>Yellow.Cards</th><th scope=col>Red.Cards</th><th scope=col>Subs.on</th><th scope=col>Subs.off</th><th scope=col>Players.Used</th></tr>\n",
+       "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>⋯</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th></tr>\n",
+       "</thead>\n",
+       "<tbody>\n",
+       "\t<tr><td>Croatia            </td><td> 4</td><td>13</td><td>12</td><td>51.9%</td><td>16.0%</td><td> 32</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>13</td><td>81.3%</td><td> 41</td><td>62</td><td> 2</td><td> 9</td><td>0</td><td> 9</td><td> 9</td><td>16</td></tr>\n",
+       "\t<tr><td>Czech Republic     </td><td> 4</td><td>13</td><td>18</td><td>41.9%</td><td>12.9%</td><td> 39</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td> 9</td><td>60.1%</td><td> 53</td><td>73</td><td> 8</td><td> 7</td><td>0</td><td>11</td><td>11</td><td>19</td></tr>\n",
+       "\t<tr><td>Denmark            </td><td> 4</td><td>10</td><td>10</td><td>50.0%</td><td>20.0%</td><td> 27</td><td>1</td><td>0</td><td>0</td><td>⋯</td><td>10</td><td>66.7%</td><td> 25</td><td>38</td><td> 8</td><td> 4</td><td>0</td><td> 7</td><td> 7</td><td>15</td></tr>\n",
+       "\t<tr><td>England            </td><td> 5</td><td>11</td><td>18</td><td>50.0%</td><td>17.2%</td><td> 40</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>22</td><td>88.1%</td><td> 43</td><td>45</td><td> 6</td><td> 5</td><td>0</td><td>11</td><td>11</td><td>16</td></tr>\n",
+       "\t<tr><td>France             </td><td> 3</td><td>22</td><td>24</td><td>37.9%</td><td>6.5% </td><td> 65</td><td>1</td><td>0</td><td>0</td><td>⋯</td><td> 6</td><td>54.6%</td><td> 36</td><td>51</td><td> 5</td><td> 6</td><td>0</td><td>11</td><td>11</td><td>19</td></tr>\n",
+       "\t<tr><td>Germany            </td><td>10</td><td>32</td><td>32</td><td>47.8%</td><td>15.6%</td><td> 80</td><td>2</td><td>1</td><td>0</td><td>⋯</td><td>10</td><td>62.6%</td><td> 63</td><td>49</td><td>12</td><td> 4</td><td>0</td><td>15</td><td>15</td><td>17</td></tr>\n",
+       "\t<tr><td>Greece             </td><td> 5</td><td> 8</td><td>18</td><td>30.7%</td><td>19.2%</td><td> 32</td><td>1</td><td>1</td><td>1</td><td>⋯</td><td>13</td><td>65.1%</td><td> 67</td><td>48</td><td>12</td><td> 9</td><td>1</td><td>12</td><td>12</td><td>20</td></tr>\n",
+       "\t<tr><td>Italy              </td><td> 6</td><td>34</td><td>45</td><td>43.0%</td><td>7.5% </td><td>110</td><td>2</td><td>0</td><td>0</td><td>⋯</td><td>20</td><td>74.1%</td><td>101</td><td>89</td><td>16</td><td>16</td><td>0</td><td>18</td><td>18</td><td>19</td></tr>\n",
+       "\t<tr><td>Netherlands        </td><td> 2</td><td>12</td><td>36</td><td>25.0%</td><td>4.1% </td><td> 60</td><td>2</td><td>0</td><td>0</td><td>⋯</td><td>12</td><td>70.6%</td><td> 35</td><td>30</td><td> 3</td><td> 5</td><td>0</td><td> 7</td><td> 7</td><td>15</td></tr>\n",
+       "\t<tr><td>Poland             </td><td> 2</td><td>15</td><td>23</td><td>39.4%</td><td>5.2% </td><td> 48</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td> 6</td><td>66.7%</td><td> 48</td><td>56</td><td> 3</td><td> 7</td><td>1</td><td> 7</td><td> 7</td><td>17</td></tr>\n",
+       "\t<tr><td>Portugal           </td><td> 6</td><td>22</td><td>42</td><td>34.3%</td><td>9.3% </td><td> 82</td><td>6</td><td>0</td><td>0</td><td>⋯</td><td>10</td><td>71.5%</td><td> 73</td><td>90</td><td>10</td><td>12</td><td>0</td><td>14</td><td>14</td><td>16</td></tr>\n",
+       "\t<tr><td>Republic of Ireland</td><td> 1</td><td> 7</td><td>12</td><td>36.8%</td><td>5.2% </td><td> 28</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>17</td><td>65.4%</td><td> 43</td><td>51</td><td>11</td><td> 6</td><td>1</td><td>10</td><td>10</td><td>17</td></tr>\n",
+       "\t<tr><td>Russia             </td><td> 5</td><td> 9</td><td>31</td><td>22.5%</td><td>12.5%</td><td> 59</td><td>2</td><td>0</td><td>0</td><td>⋯</td><td>10</td><td>77.0%</td><td> 34</td><td>43</td><td> 4</td><td> 6</td><td>0</td><td> 7</td><td> 7</td><td>16</td></tr>\n",
+       "\t<tr><td>Spain              </td><td>12</td><td>42</td><td>33</td><td>55.9%</td><td>16.0%</td><td>100</td><td>0</td><td>1</td><td>0</td><td>⋯</td><td>15</td><td>93.8%</td><td>102</td><td>83</td><td>19</td><td>11</td><td>0</td><td>17</td><td>17</td><td>18</td></tr>\n",
+       "\t<tr><td>Sweden             </td><td> 5</td><td>17</td><td>19</td><td>47.2%</td><td>13.8%</td><td> 39</td><td>3</td><td>0</td><td>0</td><td>⋯</td><td> 8</td><td>61.6%</td><td> 35</td><td>51</td><td> 7</td><td> 7</td><td>0</td><td> 9</td><td> 9</td><td>18</td></tr>\n",
+       "\t<tr><td>Ukraine            </td><td> 2</td><td> 7</td><td>26</td><td>21.2%</td><td>6.0% </td><td> 38</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>13</td><td>76.5%</td><td> 48</td><td>31</td><td> 4</td><td> 5</td><td>0</td><td> 9</td><td> 9</td><td>18</td></tr>\n",
+       "</tbody>\n",
+       "</table>\n"
+      ],
+      "text/latex": [
+       "A data.frame: 16 × 35\n",
+       "\\begin{tabular}{lllllllllllllllllllll}\n",
+       " Team & Goals & Shots.on.target & Shots.off.target & Shooting.Accuracy & X..Goals.to.shots & Total.shots..inc..Blocked. & Hit.Woodwork & Penalty.goals & Penalties.not.scored & ⋯ & Saves.made & Saves.to.shots.ratio & Fouls.Won & Fouls.Conceded & Offsides & Yellow.Cards & Red.Cards & Subs.on & Subs.off & Players.Used\\\\\n",
+       " <chr> & <int> & <int> & <int> & <chr> & <chr> & <int> & <int> & <int> & <int> & ⋯ & <int> & <chr> & <int> & <int> & <int> & <int> & <int> & <int> & <int> & <int>\\\\\n",
+       "\\hline\n",
+       "\t Croatia             &  4 & 13 & 12 & 51.9\\% & 16.0\\% &  32 & 0 & 0 & 0 & ⋯ & 13 & 81.3\\% &  41 & 62 &  2 &  9 & 0 &  9 &  9 & 16\\\\\n",
+       "\t Czech Republic      &  4 & 13 & 18 & 41.9\\% & 12.9\\% &  39 & 0 & 0 & 0 & ⋯ &  9 & 60.1\\% &  53 & 73 &  8 &  7 & 0 & 11 & 11 & 19\\\\\n",
+       "\t Denmark             &  4 & 10 & 10 & 50.0\\% & 20.0\\% &  27 & 1 & 0 & 0 & ⋯ & 10 & 66.7\\% &  25 & 38 &  8 &  4 & 0 &  7 &  7 & 15\\\\\n",
+       "\t England             &  5 & 11 & 18 & 50.0\\% & 17.2\\% &  40 & 0 & 0 & 0 & ⋯ & 22 & 88.1\\% &  43 & 45 &  6 &  5 & 0 & 11 & 11 & 16\\\\\n",
+       "\t France              &  3 & 22 & 24 & 37.9\\% & 6.5\\%  &  65 & 1 & 0 & 0 & ⋯ &  6 & 54.6\\% &  36 & 51 &  5 &  6 & 0 & 11 & 11 & 19\\\\\n",
+       "\t Germany             & 10 & 32 & 32 & 47.8\\% & 15.6\\% &  80 & 2 & 1 & 0 & ⋯ & 10 & 62.6\\% &  63 & 49 & 12 &  4 & 0 & 15 & 15 & 17\\\\\n",
+       "\t Greece              &  5 &  8 & 18 & 30.7\\% & 19.2\\% &  32 & 1 & 1 & 1 & ⋯ & 13 & 65.1\\% &  67 & 48 & 12 &  9 & 1 & 12 & 12 & 20\\\\\n",
+       "\t Italy               &  6 & 34 & 45 & 43.0\\% & 7.5\\%  & 110 & 2 & 0 & 0 & ⋯ & 20 & 74.1\\% & 101 & 89 & 16 & 16 & 0 & 18 & 18 & 19\\\\\n",
+       "\t Netherlands         &  2 & 12 & 36 & 25.0\\% & 4.1\\%  &  60 & 2 & 0 & 0 & ⋯ & 12 & 70.6\\% &  35 & 30 &  3 &  5 & 0 &  7 &  7 & 15\\\\\n",
+       "\t Poland              &  2 & 15 & 23 & 39.4\\% & 5.2\\%  &  48 & 0 & 0 & 0 & ⋯ &  6 & 66.7\\% &  48 & 56 &  3 &  7 & 1 &  7 &  7 & 17\\\\\n",
+       "\t Portugal            &  6 & 22 & 42 & 34.3\\% & 9.3\\%  &  82 & 6 & 0 & 0 & ⋯ & 10 & 71.5\\% &  73 & 90 & 10 & 12 & 0 & 14 & 14 & 16\\\\\n",
+       "\t Republic of Ireland &  1 &  7 & 12 & 36.8\\% & 5.2\\%  &  28 & 0 & 0 & 0 & ⋯ & 17 & 65.4\\% &  43 & 51 & 11 &  6 & 1 & 10 & 10 & 17\\\\\n",
+       "\t Russia              &  5 &  9 & 31 & 22.5\\% & 12.5\\% &  59 & 2 & 0 & 0 & ⋯ & 10 & 77.0\\% &  34 & 43 &  4 &  6 & 0 &  7 &  7 & 16\\\\\n",
+       "\t Spain               & 12 & 42 & 33 & 55.9\\% & 16.0\\% & 100 & 0 & 1 & 0 & ⋯ & 15 & 93.8\\% & 102 & 83 & 19 & 11 & 0 & 17 & 17 & 18\\\\\n",
+       "\t Sweden              &  5 & 17 & 19 & 47.2\\% & 13.8\\% &  39 & 3 & 0 & 0 & ⋯ &  8 & 61.6\\% &  35 & 51 &  7 &  7 & 0 &  9 &  9 & 18\\\\\n",
+       "\t Ukraine             &  2 &  7 & 26 & 21.2\\% & 6.0\\%  &  38 & 0 & 0 & 0 & ⋯ & 13 & 76.5\\% &  48 & 31 &  4 &  5 & 0 &  9 &  9 & 18\\\\\n",
+       "\\end{tabular}\n"
+      ],
+      "text/markdown": [
+       "\n",
+       "A data.frame: 16 × 35\n",
+       "\n",
+       "| Team &lt;chr&gt; | Goals &lt;int&gt; | Shots.on.target &lt;int&gt; | Shots.off.target &lt;int&gt; | Shooting.Accuracy &lt;chr&gt; | X..Goals.to.shots &lt;chr&gt; | Total.shots..inc..Blocked. &lt;int&gt; | Hit.Woodwork &lt;int&gt; | Penalty.goals &lt;int&gt; | Penalties.not.scored &lt;int&gt; | ⋯ ⋯ | Saves.made &lt;int&gt; | Saves.to.shots.ratio &lt;chr&gt; | Fouls.Won &lt;int&gt; | Fouls.Conceded &lt;int&gt; | Offsides &lt;int&gt; | Yellow.Cards &lt;int&gt; | Red.Cards &lt;int&gt; | Subs.on &lt;int&gt; | Subs.off &lt;int&gt; | Players.Used &lt;int&gt; |\n",
+       "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n",
+       "| Croatia             |  4 | 13 | 12 | 51.9% | 16.0% |  32 | 0 | 0 | 0 | ⋯ | 13 | 81.3% |  41 | 62 |  2 |  9 | 0 |  9 |  9 | 16 |\n",
+       "| Czech Republic      |  4 | 13 | 18 | 41.9% | 12.9% |  39 | 0 | 0 | 0 | ⋯ |  9 | 60.1% |  53 | 73 |  8 |  7 | 0 | 11 | 11 | 19 |\n",
+       "| Denmark             |  4 | 10 | 10 | 50.0% | 20.0% |  27 | 1 | 0 | 0 | ⋯ | 10 | 66.7% |  25 | 38 |  8 |  4 | 0 |  7 |  7 | 15 |\n",
+       "| England             |  5 | 11 | 18 | 50.0% | 17.2% |  40 | 0 | 0 | 0 | ⋯ | 22 | 88.1% |  43 | 45 |  6 |  5 | 0 | 11 | 11 | 16 |\n",
+       "| France              |  3 | 22 | 24 | 37.9% | 6.5%  |  65 | 1 | 0 | 0 | ⋯ |  6 | 54.6% |  36 | 51 |  5 |  6 | 0 | 11 | 11 | 19 |\n",
+       "| Germany             | 10 | 32 | 32 | 47.8% | 15.6% |  80 | 2 | 1 | 0 | ⋯ | 10 | 62.6% |  63 | 49 | 12 |  4 | 0 | 15 | 15 | 17 |\n",
+       "| Greece              |  5 |  8 | 18 | 30.7% | 19.2% |  32 | 1 | 1 | 1 | ⋯ | 13 | 65.1% |  67 | 48 | 12 |  9 | 1 | 12 | 12 | 20 |\n",
+       "| Italy               |  6 | 34 | 45 | 43.0% | 7.5%  | 110 | 2 | 0 | 0 | ⋯ | 20 | 74.1% | 101 | 89 | 16 | 16 | 0 | 18 | 18 | 19 |\n",
+       "| Netherlands         |  2 | 12 | 36 | 25.0% | 4.1%  |  60 | 2 | 0 | 0 | ⋯ | 12 | 70.6% |  35 | 30 |  3 |  5 | 0 |  7 |  7 | 15 |\n",
+       "| Poland              |  2 | 15 | 23 | 39.4% | 5.2%  |  48 | 0 | 0 | 0 | ⋯ |  6 | 66.7% |  48 | 56 |  3 |  7 | 1 |  7 |  7 | 17 |\n",
+       "| Portugal            |  6 | 22 | 42 | 34.3% | 9.3%  |  82 | 6 | 0 | 0 | ⋯ | 10 | 71.5% |  73 | 90 | 10 | 12 | 0 | 14 | 14 | 16 |\n",
+       "| Republic of Ireland |  1 |  7 | 12 | 36.8% | 5.2%  |  28 | 0 | 0 | 0 | ⋯ | 17 | 65.4% |  43 | 51 | 11 |  6 | 1 | 10 | 10 | 17 |\n",
+       "| Russia              |  5 |  9 | 31 | 22.5% | 12.5% |  59 | 2 | 0 | 0 | ⋯ | 10 | 77.0% |  34 | 43 |  4 |  6 | 0 |  7 |  7 | 16 |\n",
+       "| Spain               | 12 | 42 | 33 | 55.9% | 16.0% | 100 | 0 | 1 | 0 | ⋯ | 15 | 93.8% | 102 | 83 | 19 | 11 | 0 | 17 | 17 | 18 |\n",
+       "| Sweden              |  5 | 17 | 19 | 47.2% | 13.8% |  39 | 3 | 0 | 0 | ⋯ |  8 | 61.6% |  35 | 51 |  7 |  7 | 0 |  9 |  9 | 18 |\n",
+       "| Ukraine             |  2 |  7 | 26 | 21.2% | 6.0%  |  38 | 0 | 0 | 0 | ⋯ | 13 | 76.5% |  48 | 31 |  4 |  5 | 0 |  9 |  9 | 18 |\n",
+       "\n"
+      ],
+      "text/plain": [
+       "   Team                Goals Shots.on.target Shots.off.target Shooting.Accuracy\n",
+       "1  Croatia              4    13              12               51.9%            \n",
+       "2  Czech Republic       4    13              18               41.9%            \n",
+       "3  Denmark              4    10              10               50.0%            \n",
+       "4  England              5    11              18               50.0%            \n",
+       "5  France               3    22              24               37.9%            \n",
+       "6  Germany             10    32              32               47.8%            \n",
+       "7  Greece               5     8              18               30.7%            \n",
+       "8  Italy                6    34              45               43.0%            \n",
+       "9  Netherlands          2    12              36               25.0%            \n",
+       "10 Poland               2    15              23               39.4%            \n",
+       "11 Portugal             6    22              42               34.3%            \n",
+       "12 Republic of Ireland  1     7              12               36.8%            \n",
+       "13 Russia               5     9              31               22.5%            \n",
+       "14 Spain               12    42              33               55.9%            \n",
+       "15 Sweden               5    17              19               47.2%            \n",
+       "16 Ukraine              2     7              26               21.2%            \n",
+       "   X..Goals.to.shots Total.shots..inc..Blocked. Hit.Woodwork Penalty.goals\n",
+       "1  16.0%              32                        0            0            \n",
+       "2  12.9%              39                        0            0            \n",
+       "3  20.0%              27                        1            0            \n",
+       "4  17.2%              40                        0            0            \n",
+       "5  6.5%               65                        1            0            \n",
+       "6  15.6%              80                        2            1            \n",
+       "7  19.2%              32                        1            1            \n",
+       "8  7.5%              110                        2            0            \n",
+       "9  4.1%               60                        2            0            \n",
+       "10 5.2%               48                        0            0            \n",
+       "11 9.3%               82                        6            0            \n",
+       "12 5.2%               28                        0            0            \n",
+       "13 12.5%              59                        2            0            \n",
+       "14 16.0%             100                        0            1            \n",
+       "15 13.8%              39                        3            0            \n",
+       "16 6.0%               38                        0            0            \n",
+       "   Penalties.not.scored ⋯ Saves.made Saves.to.shots.ratio Fouls.Won\n",
+       "1  0                    ⋯ 13         81.3%                 41      \n",
+       "2  0                    ⋯  9         60.1%                 53      \n",
+       "3  0                    ⋯ 10         66.7%                 25      \n",
+       "4  0                    ⋯ 22         88.1%                 43      \n",
+       "5  0                    ⋯  6         54.6%                 36      \n",
+       "6  0                    ⋯ 10         62.6%                 63      \n",
+       "7  1                    ⋯ 13         65.1%                 67      \n",
+       "8  0                    ⋯ 20         74.1%                101      \n",
+       "9  0                    ⋯ 12         70.6%                 35      \n",
+       "10 0                    ⋯  6         66.7%                 48      \n",
+       "11 0                    ⋯ 10         71.5%                 73      \n",
+       "12 0                    ⋯ 17         65.4%                 43      \n",
+       "13 0                    ⋯ 10         77.0%                 34      \n",
+       "14 0                    ⋯ 15         93.8%                102      \n",
+       "15 0                    ⋯  8         61.6%                 35      \n",
+       "16 0                    ⋯ 13         76.5%                 48      \n",
+       "   Fouls.Conceded Offsides Yellow.Cards Red.Cards Subs.on Subs.off Players.Used\n",
+       "1  62              2        9           0          9       9       16          \n",
+       "2  73              8        7           0         11      11       19          \n",
+       "3  38              8        4           0          7       7       15          \n",
+       "4  45              6        5           0         11      11       16          \n",
+       "5  51              5        6           0         11      11       19          \n",
+       "6  49             12        4           0         15      15       17          \n",
+       "7  48             12        9           1         12      12       20          \n",
+       "8  89             16       16           0         18      18       19          \n",
+       "9  30              3        5           0          7       7       15          \n",
+       "10 56              3        7           1          7       7       17          \n",
+       "11 90             10       12           0         14      14       16          \n",
+       "12 51             11        6           1         10      10       17          \n",
+       "13 43              4        6           0          7       7       16          \n",
+       "14 83             19       11           0         17      17       18          \n",
+       "15 51              7        7           0          9       9       18          \n",
+       "16 31              4        5           0          9       9       18          "
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "View(stats)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fa2ed17d",
+   "metadata": {
+    "papermill": {
+     "duration": 0.008531,
+     "end_time": "2023-05-27T20:04:19.717111",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:19.708580",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "Question 1. How many teams participated in the Euro2012"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "d7b2e1df",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-05-27T20:04:19.738049Z",
+     "iopub.status.busy": "2023-05-27T20:04:19.736282Z",
+     "iopub.status.idle": "2023-05-27T20:04:19.756536Z",
+     "shell.execute_reply": "2023-05-27T20:04:19.754495Z"
+    },
+    "papermill": {
+     "duration": 0.033904,
+     "end_time": "2023-05-27T20:04:19.759562",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:19.725658",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "16"
+      ],
+      "text/latex": [
+       "16"
+      ],
+      "text/markdown": [
+       "16"
+      ],
+      "text/plain": [
+       "[1] 16"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "nrow(stats)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6bedc927",
+   "metadata": {
+    "papermill": {
+     "duration": 0.00869,
+     "end_time": "2023-05-27T20:04:19.777570",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:19.768880",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "Question 2. What is the number of columns in the dataset?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "2af1fb80",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-05-27T20:04:19.798576Z",
+     "iopub.status.busy": "2023-05-27T20:04:19.796817Z",
+     "iopub.status.idle": "2023-05-27T20:04:19.814954Z",
+     "shell.execute_reply": "2023-05-27T20:04:19.813048Z"
+    },
+    "papermill": {
+     "duration": 0.031365,
+     "end_time": "2023-05-27T20:04:19.817571",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:19.786206",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "35"
+      ],
+      "text/latex": [
+       "35"
+      ],
+      "text/markdown": [
+       "35"
+      ],
+      "text/plain": [
+       "[1] 35"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "ncol(stats)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d4e4cc1b",
+   "metadata": {
+    "papermill": {
+     "duration": 0.008958,
+     "end_time": "2023-05-27T20:04:19.835905",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:19.826947",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "Question 3.  View only the columns Team, Yellow Cards and Red Cards and assign them to a dataframe called discipline."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "009afab8",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-05-27T20:04:19.858308Z",
+     "iopub.status.busy": "2023-05-27T20:04:19.856693Z",
+     "iopub.status.idle": "2023-05-27T20:04:19.926413Z",
+     "shell.execute_reply": "2023-05-27T20:04:19.924650Z"
+    },
+    "papermill": {
+     "duration": 0.083532,
+     "end_time": "2023-05-27T20:04:19.928912",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:19.845380",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<table class=\"dataframe\">\n",
+       "<caption>A data.frame: 6 × 3</caption>\n",
+       "<thead>\n",
+       "\t<tr><th></th><th scope=col>Team</th><th scope=col>Yellow.Cards</th><th scope=col>Red.Cards</th></tr>\n",
+       "\t<tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th></tr>\n",
+       "</thead>\n",
+       "<tbody>\n",
+       "\t<tr><th scope=row>1</th><td>Croatia       </td><td>9</td><td>0</td></tr>\n",
+       "\t<tr><th scope=row>2</th><td>Czech Republic</td><td>7</td><td>0</td></tr>\n",
+       "\t<tr><th scope=row>3</th><td>Denmark       </td><td>4</td><td>0</td></tr>\n",
+       "\t<tr><th scope=row>4</th><td>England       </td><td>5</td><td>0</td></tr>\n",
+       "\t<tr><th scope=row>5</th><td>France        </td><td>6</td><td>0</td></tr>\n",
+       "\t<tr><th scope=row>6</th><td>Germany       </td><td>4</td><td>0</td></tr>\n",
+       "</tbody>\n",
+       "</table>\n"
+      ],
+      "text/latex": [
+       "A data.frame: 6 × 3\n",
+       "\\begin{tabular}{r|lll}\n",
+       "  & Team & Yellow.Cards & Red.Cards\\\\\n",
+       "  & <chr> & <int> & <int>\\\\\n",
+       "\\hline\n",
+       "\t1 & Croatia        & 9 & 0\\\\\n",
+       "\t2 & Czech Republic & 7 & 0\\\\\n",
+       "\t3 & Denmark        & 4 & 0\\\\\n",
+       "\t4 & England        & 5 & 0\\\\\n",
+       "\t5 & France         & 6 & 0\\\\\n",
+       "\t6 & Germany        & 4 & 0\\\\\n",
+       "\\end{tabular}\n"
+      ],
+      "text/markdown": [
+       "\n",
+       "A data.frame: 6 × 3\n",
+       "\n",
+       "| <!--/--> | Team &lt;chr&gt; | Yellow.Cards &lt;int&gt; | Red.Cards &lt;int&gt; |\n",
+       "|---|---|---|---|\n",
+       "| 1 | Croatia        | 9 | 0 |\n",
+       "| 2 | Czech Republic | 7 | 0 |\n",
+       "| 3 | Denmark        | 4 | 0 |\n",
+       "| 4 | England        | 5 | 0 |\n",
+       "| 5 | France         | 6 | 0 |\n",
+       "| 6 | Germany        | 4 | 0 |\n",
+       "\n"
+      ],
+      "text/plain": [
+       "  Team           Yellow.Cards Red.Cards\n",
+       "1 Croatia        9            0        \n",
+       "2 Czech Republic 7            0        \n",
+       "3 Denmark        4            0        \n",
+       "4 England        5            0        \n",
+       "5 France         6            0        \n",
+       "6 Germany        4            0        "
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "discipline <- stats %>% select (Team, Yellow.Cards, Red.Cards)\n",
+    "head(discipline)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dc49d52b",
+   "metadata": {
+    "papermill": {
+     "duration": 0.009059,
+     "end_time": "2023-05-27T20:04:19.947241",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:19.938182",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "Question 4. Sort the teams by Red Cards, then to Yellow Cards."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "7a3ac023",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-05-27T20:04:19.969862Z",
+     "iopub.status.busy": "2023-05-27T20:04:19.968092Z",
+     "iopub.status.idle": "2023-05-27T20:04:20.011773Z",
+     "shell.execute_reply": "2023-05-27T20:04:20.009860Z"
+    },
+    "papermill": {
+     "duration": 0.057288,
+     "end_time": "2023-05-27T20:04:20.014225",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:19.956937",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<table class=\"dataframe\">\n",
+       "<caption>A data.frame: 16 × 3</caption>\n",
+       "<thead>\n",
+       "\t<tr><th scope=col>Team</th><th scope=col>Yellow.Cards</th><th scope=col>Red.Cards</th></tr>\n",
+       "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th></tr>\n",
+       "</thead>\n",
+       "<tbody>\n",
+       "\t<tr><td>Denmark            </td><td> 4</td><td>0</td></tr>\n",
+       "\t<tr><td>Germany            </td><td> 4</td><td>0</td></tr>\n",
+       "\t<tr><td>England            </td><td> 5</td><td>0</td></tr>\n",
+       "\t<tr><td>Netherlands        </td><td> 5</td><td>0</td></tr>\n",
+       "\t<tr><td>Ukraine            </td><td> 5</td><td>0</td></tr>\n",
+       "\t<tr><td>France             </td><td> 6</td><td>0</td></tr>\n",
+       "\t<tr><td>Russia             </td><td> 6</td><td>0</td></tr>\n",
+       "\t<tr><td>Czech Republic     </td><td> 7</td><td>0</td></tr>\n",
+       "\t<tr><td>Sweden             </td><td> 7</td><td>0</td></tr>\n",
+       "\t<tr><td>Croatia            </td><td> 9</td><td>0</td></tr>\n",
+       "\t<tr><td>Spain              </td><td>11</td><td>0</td></tr>\n",
+       "\t<tr><td>Portugal           </td><td>12</td><td>0</td></tr>\n",
+       "\t<tr><td>Italy              </td><td>16</td><td>0</td></tr>\n",
+       "\t<tr><td>Republic of Ireland</td><td> 6</td><td>1</td></tr>\n",
+       "\t<tr><td>Poland             </td><td> 7</td><td>1</td></tr>\n",
+       "\t<tr><td>Greece             </td><td> 9</td><td>1</td></tr>\n",
+       "</tbody>\n",
+       "</table>\n"
+      ],
+      "text/latex": [
+       "A data.frame: 16 × 3\n",
+       "\\begin{tabular}{lll}\n",
+       " Team & Yellow.Cards & Red.Cards\\\\\n",
+       " <chr> & <int> & <int>\\\\\n",
+       "\\hline\n",
+       "\t Denmark             &  4 & 0\\\\\n",
+       "\t Germany             &  4 & 0\\\\\n",
+       "\t England             &  5 & 0\\\\\n",
+       "\t Netherlands         &  5 & 0\\\\\n",
+       "\t Ukraine             &  5 & 0\\\\\n",
+       "\t France              &  6 & 0\\\\\n",
+       "\t Russia              &  6 & 0\\\\\n",
+       "\t Czech Republic      &  7 & 0\\\\\n",
+       "\t Sweden              &  7 & 0\\\\\n",
+       "\t Croatia             &  9 & 0\\\\\n",
+       "\t Spain               & 11 & 0\\\\\n",
+       "\t Portugal            & 12 & 0\\\\\n",
+       "\t Italy               & 16 & 0\\\\\n",
+       "\t Republic of Ireland &  6 & 1\\\\\n",
+       "\t Poland              &  7 & 1\\\\\n",
+       "\t Greece              &  9 & 1\\\\\n",
+       "\\end{tabular}\n"
+      ],
+      "text/markdown": [
+       "\n",
+       "A data.frame: 16 × 3\n",
+       "\n",
+       "| Team &lt;chr&gt; | Yellow.Cards &lt;int&gt; | Red.Cards &lt;int&gt; |\n",
+       "|---|---|---|\n",
+       "| Denmark             |  4 | 0 |\n",
+       "| Germany             |  4 | 0 |\n",
+       "| England             |  5 | 0 |\n",
+       "| Netherlands         |  5 | 0 |\n",
+       "| Ukraine             |  5 | 0 |\n",
+       "| France              |  6 | 0 |\n",
+       "| Russia              |  6 | 0 |\n",
+       "| Czech Republic      |  7 | 0 |\n",
+       "| Sweden              |  7 | 0 |\n",
+       "| Croatia             |  9 | 0 |\n",
+       "| Spain               | 11 | 0 |\n",
+       "| Portugal            | 12 | 0 |\n",
+       "| Italy               | 16 | 0 |\n",
+       "| Republic of Ireland |  6 | 1 |\n",
+       "| Poland              |  7 | 1 |\n",
+       "| Greece              |  9 | 1 |\n",
+       "\n"
+      ],
+      "text/plain": [
+       "   Team                Yellow.Cards Red.Cards\n",
+       "1  Denmark              4           0        \n",
+       "2  Germany              4           0        \n",
+       "3  England              5           0        \n",
+       "4  Netherlands          5           0        \n",
+       "5  Ukraine              5           0        \n",
+       "6  France               6           0        \n",
+       "7  Russia               6           0        \n",
+       "8  Czech Republic       7           0        \n",
+       "9  Sweden               7           0        \n",
+       "10 Croatia              9           0        \n",
+       "11 Spain               11           0        \n",
+       "12 Portugal            12           0        \n",
+       "13 Italy               16           0        \n",
+       "14 Republic of Ireland  6           1        \n",
+       "15 Poland               7           1        \n",
+       "16 Greece               9           1        "
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "arrange (discipline, Red.Cards, Yellow.Cards)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bc773250",
+   "metadata": {
+    "papermill": {
+     "duration": 0.009638,
+     "end_time": "2023-05-27T20:04:20.033650",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:20.024012",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "Question 5. Calculate the mean Yellow Cards given per Team."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "694aeaa8",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-05-27T20:04:20.056622Z",
+     "iopub.status.busy": "2023-05-27T20:04:20.054855Z",
+     "iopub.status.idle": "2023-05-27T20:04:20.073559Z",
+     "shell.execute_reply": "2023-05-27T20:04:20.071660Z"
+    },
+    "papermill": {
+     "duration": 0.032889,
+     "end_time": "2023-05-27T20:04:20.076224",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:20.043335",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "7.4375"
+      ],
+      "text/latex": [
+       "7.4375"
+      ],
+      "text/markdown": [
+       "7.4375"
+      ],
+      "text/plain": [
+       "[1] 7.4375"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "mean(discipline$Yellow.Cards)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2e8bb436",
+   "metadata": {
+    "papermill": {
+     "duration": 0.009968,
+     "end_time": "2023-05-27T20:04:20.096487",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:20.086519",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "Question 6. Filter teams that scored more than 6 goals."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "10c48425",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-05-27T20:04:20.142752Z",
+     "iopub.status.busy": "2023-05-27T20:04:20.141002Z",
+     "iopub.status.idle": "2023-05-27T20:04:20.187184Z",
+     "shell.execute_reply": "2023-05-27T20:04:20.185204Z"
+    },
+    "papermill": {
+     "duration": 0.083422,
+     "end_time": "2023-05-27T20:04:20.189722",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:20.106300",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<table class=\"dataframe\">\n",
+       "<caption>A data.frame: 2 × 35</caption>\n",
+       "<thead>\n",
+       "\t<tr><th scope=col>Team</th><th scope=col>Goals</th><th scope=col>Shots.on.target</th><th scope=col>Shots.off.target</th><th scope=col>Shooting.Accuracy</th><th scope=col>X..Goals.to.shots</th><th scope=col>Total.shots..inc..Blocked.</th><th scope=col>Hit.Woodwork</th><th scope=col>Penalty.goals</th><th scope=col>Penalties.not.scored</th><th scope=col>⋯</th><th scope=col>Saves.made</th><th scope=col>Saves.to.shots.ratio</th><th scope=col>Fouls.Won</th><th scope=col>Fouls.Conceded</th><th scope=col>Offsides</th><th scope=col>Yellow.Cards</th><th scope=col>Red.Cards</th><th scope=col>Subs.on</th><th scope=col>Subs.off</th><th scope=col>Players.Used</th></tr>\n",
+       "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>⋯</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th></tr>\n",
+       "</thead>\n",
+       "<tbody>\n",
+       "\t<tr><td>Germany</td><td>10</td><td>32</td><td>32</td><td>47.8%</td><td>15.6%</td><td> 80</td><td>2</td><td>1</td><td>0</td><td>⋯</td><td>10</td><td>62.6%</td><td> 63</td><td>49</td><td>12</td><td> 4</td><td>0</td><td>15</td><td>15</td><td>17</td></tr>\n",
+       "\t<tr><td>Spain  </td><td>12</td><td>42</td><td>33</td><td>55.9%</td><td>16.0%</td><td>100</td><td>0</td><td>1</td><td>0</td><td>⋯</td><td>15</td><td>93.8%</td><td>102</td><td>83</td><td>19</td><td>11</td><td>0</td><td>17</td><td>17</td><td>18</td></tr>\n",
+       "</tbody>\n",
+       "</table>\n"
+      ],
+      "text/latex": [
+       "A data.frame: 2 × 35\n",
+       "\\begin{tabular}{lllllllllllllllllllll}\n",
+       " Team & Goals & Shots.on.target & Shots.off.target & Shooting.Accuracy & X..Goals.to.shots & Total.shots..inc..Blocked. & Hit.Woodwork & Penalty.goals & Penalties.not.scored & ⋯ & Saves.made & Saves.to.shots.ratio & Fouls.Won & Fouls.Conceded & Offsides & Yellow.Cards & Red.Cards & Subs.on & Subs.off & Players.Used\\\\\n",
+       " <chr> & <int> & <int> & <int> & <chr> & <chr> & <int> & <int> & <int> & <int> & ⋯ & <int> & <chr> & <int> & <int> & <int> & <int> & <int> & <int> & <int> & <int>\\\\\n",
+       "\\hline\n",
+       "\t Germany & 10 & 32 & 32 & 47.8\\% & 15.6\\% &  80 & 2 & 1 & 0 & ⋯ & 10 & 62.6\\% &  63 & 49 & 12 &  4 & 0 & 15 & 15 & 17\\\\\n",
+       "\t Spain   & 12 & 42 & 33 & 55.9\\% & 16.0\\% & 100 & 0 & 1 & 0 & ⋯ & 15 & 93.8\\% & 102 & 83 & 19 & 11 & 0 & 17 & 17 & 18\\\\\n",
+       "\\end{tabular}\n"
+      ],
+      "text/markdown": [
+       "\n",
+       "A data.frame: 2 × 35\n",
+       "\n",
+       "| Team &lt;chr&gt; | Goals &lt;int&gt; | Shots.on.target &lt;int&gt; | Shots.off.target &lt;int&gt; | Shooting.Accuracy &lt;chr&gt; | X..Goals.to.shots &lt;chr&gt; | Total.shots..inc..Blocked. &lt;int&gt; | Hit.Woodwork &lt;int&gt; | Penalty.goals &lt;int&gt; | Penalties.not.scored &lt;int&gt; | ⋯ ⋯ | Saves.made &lt;int&gt; | Saves.to.shots.ratio &lt;chr&gt; | Fouls.Won &lt;int&gt; | Fouls.Conceded &lt;int&gt; | Offsides &lt;int&gt; | Yellow.Cards &lt;int&gt; | Red.Cards &lt;int&gt; | Subs.on &lt;int&gt; | Subs.off &lt;int&gt; | Players.Used &lt;int&gt; |\n",
+       "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n",
+       "| Germany | 10 | 32 | 32 | 47.8% | 15.6% |  80 | 2 | 1 | 0 | ⋯ | 10 | 62.6% |  63 | 49 | 12 |  4 | 0 | 15 | 15 | 17 |\n",
+       "| Spain   | 12 | 42 | 33 | 55.9% | 16.0% | 100 | 0 | 1 | 0 | ⋯ | 15 | 93.8% | 102 | 83 | 19 | 11 | 0 | 17 | 17 | 18 |\n",
+       "\n"
+      ],
+      "text/plain": [
+       "  Team    Goals Shots.on.target Shots.off.target Shooting.Accuracy\n",
+       "1 Germany 10    32              32               47.8%            \n",
+       "2 Spain   12    42              33               55.9%            \n",
+       "  X..Goals.to.shots Total.shots..inc..Blocked. Hit.Woodwork Penalty.goals\n",
+       "1 15.6%              80                        2            1            \n",
+       "2 16.0%             100                        0            1            \n",
+       "  Penalties.not.scored ⋯ Saves.made Saves.to.shots.ratio Fouls.Won\n",
+       "1 0                    ⋯ 10         62.6%                 63      \n",
+       "2 0                    ⋯ 15         93.8%                102      \n",
+       "  Fouls.Conceded Offsides Yellow.Cards Red.Cards Subs.on Subs.off Players.Used\n",
+       "1 49             12        4           0         15      15       17          \n",
+       "2 83             19       11           0         17      17       18          "
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "filter(stats, Goals > 6)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6eb6ddfb",
+   "metadata": {
+    "papermill": {
+     "duration": 0.010189,
+     "end_time": "2023-05-27T20:04:20.210188",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:20.199999",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "Question 7. Select the teams that start with the letter G."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "e0c08093",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-05-27T20:04:20.234012Z",
+     "iopub.status.busy": "2023-05-27T20:04:20.232374Z",
+     "iopub.status.idle": "2023-05-27T20:04:20.276345Z",
+     "shell.execute_reply": "2023-05-27T20:04:20.274480Z"
+    },
+    "papermill": {
+     "duration": 0.058837,
+     "end_time": "2023-05-27T20:04:20.279049",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:20.220212",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<table class=\"dataframe\">\n",
+       "<caption>A data.frame: 2 × 35</caption>\n",
+       "<thead>\n",
+       "\t<tr><th scope=col>Team</th><th scope=col>Goals</th><th scope=col>Shots.on.target</th><th scope=col>Shots.off.target</th><th scope=col>Shooting.Accuracy</th><th scope=col>X..Goals.to.shots</th><th scope=col>Total.shots..inc..Blocked.</th><th scope=col>Hit.Woodwork</th><th scope=col>Penalty.goals</th><th scope=col>Penalties.not.scored</th><th scope=col>⋯</th><th scope=col>Saves.made</th><th scope=col>Saves.to.shots.ratio</th><th scope=col>Fouls.Won</th><th scope=col>Fouls.Conceded</th><th scope=col>Offsides</th><th scope=col>Yellow.Cards</th><th scope=col>Red.Cards</th><th scope=col>Subs.on</th><th scope=col>Subs.off</th><th scope=col>Players.Used</th></tr>\n",
+       "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>⋯</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th></tr>\n",
+       "</thead>\n",
+       "<tbody>\n",
+       "\t<tr><td>Germany</td><td>10</td><td>32</td><td>32</td><td>47.8%</td><td>15.6%</td><td>80</td><td>2</td><td>1</td><td>0</td><td>⋯</td><td>10</td><td>62.6%</td><td>63</td><td>49</td><td>12</td><td>4</td><td>0</td><td>15</td><td>15</td><td>17</td></tr>\n",
+       "\t<tr><td>Greece </td><td> 5</td><td> 8</td><td>18</td><td>30.7%</td><td>19.2%</td><td>32</td><td>1</td><td>1</td><td>1</td><td>⋯</td><td>13</td><td>65.1%</td><td>67</td><td>48</td><td>12</td><td>9</td><td>1</td><td>12</td><td>12</td><td>20</td></tr>\n",
+       "</tbody>\n",
+       "</table>\n"
+      ],
+      "text/latex": [
+       "A data.frame: 2 × 35\n",
+       "\\begin{tabular}{lllllllllllllllllllll}\n",
+       " Team & Goals & Shots.on.target & Shots.off.target & Shooting.Accuracy & X..Goals.to.shots & Total.shots..inc..Blocked. & Hit.Woodwork & Penalty.goals & Penalties.not.scored & ⋯ & Saves.made & Saves.to.shots.ratio & Fouls.Won & Fouls.Conceded & Offsides & Yellow.Cards & Red.Cards & Subs.on & Subs.off & Players.Used\\\\\n",
+       " <chr> & <int> & <int> & <int> & <chr> & <chr> & <int> & <int> & <int> & <int> & ⋯ & <int> & <chr> & <int> & <int> & <int> & <int> & <int> & <int> & <int> & <int>\\\\\n",
+       "\\hline\n",
+       "\t Germany & 10 & 32 & 32 & 47.8\\% & 15.6\\% & 80 & 2 & 1 & 0 & ⋯ & 10 & 62.6\\% & 63 & 49 & 12 & 4 & 0 & 15 & 15 & 17\\\\\n",
+       "\t Greece  &  5 &  8 & 18 & 30.7\\% & 19.2\\% & 32 & 1 & 1 & 1 & ⋯ & 13 & 65.1\\% & 67 & 48 & 12 & 9 & 1 & 12 & 12 & 20\\\\\n",
+       "\\end{tabular}\n"
+      ],
+      "text/markdown": [
+       "\n",
+       "A data.frame: 2 × 35\n",
+       "\n",
+       "| Team &lt;chr&gt; | Goals &lt;int&gt; | Shots.on.target &lt;int&gt; | Shots.off.target &lt;int&gt; | Shooting.Accuracy &lt;chr&gt; | X..Goals.to.shots &lt;chr&gt; | Total.shots..inc..Blocked. &lt;int&gt; | Hit.Woodwork &lt;int&gt; | Penalty.goals &lt;int&gt; | Penalties.not.scored &lt;int&gt; | ⋯ ⋯ | Saves.made &lt;int&gt; | Saves.to.shots.ratio &lt;chr&gt; | Fouls.Won &lt;int&gt; | Fouls.Conceded &lt;int&gt; | Offsides &lt;int&gt; | Yellow.Cards &lt;int&gt; | Red.Cards &lt;int&gt; | Subs.on &lt;int&gt; | Subs.off &lt;int&gt; | Players.Used &lt;int&gt; |\n",
+       "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n",
+       "| Germany | 10 | 32 | 32 | 47.8% | 15.6% | 80 | 2 | 1 | 0 | ⋯ | 10 | 62.6% | 63 | 49 | 12 | 4 | 0 | 15 | 15 | 17 |\n",
+       "| Greece  |  5 |  8 | 18 | 30.7% | 19.2% | 32 | 1 | 1 | 1 | ⋯ | 13 | 65.1% | 67 | 48 | 12 | 9 | 1 | 12 | 12 | 20 |\n",
+       "\n"
+      ],
+      "text/plain": [
+       "  Team    Goals Shots.on.target Shots.off.target Shooting.Accuracy\n",
+       "1 Germany 10    32              32               47.8%            \n",
+       "2 Greece   5     8              18               30.7%            \n",
+       "  X..Goals.to.shots Total.shots..inc..Blocked. Hit.Woodwork Penalty.goals\n",
+       "1 15.6%             80                         2            1            \n",
+       "2 19.2%             32                         1            1            \n",
+       "  Penalties.not.scored ⋯ Saves.made Saves.to.shots.ratio Fouls.Won\n",
+       "1 0                    ⋯ 10         62.6%                63       \n",
+       "2 1                    ⋯ 13         65.1%                67       \n",
+       "  Fouls.Conceded Offsides Yellow.Cards Red.Cards Subs.on Subs.off Players.Used\n",
+       "1 49             12       4            0         15      15       17          \n",
+       "2 48             12       9            1         12      12       20          "
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "filter(stats, substr(stats$Team,1,1) == \"G\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d3c3f1d7",
+   "metadata": {
+    "papermill": {
+     "duration": 0.010473,
+     "end_time": "2023-05-27T20:04:20.300139",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:20.289666",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "Question 8. Select the first 7 columns."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "40e294dc",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-05-27T20:04:20.324748Z",
+     "iopub.status.busy": "2023-05-27T20:04:20.323128Z",
+     "iopub.status.idle": "2023-05-27T20:04:20.360731Z",
+     "shell.execute_reply": "2023-05-27T20:04:20.358927Z"
+    },
+    "papermill": {
+     "duration": 0.052925,
+     "end_time": "2023-05-27T20:04:20.363362",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:20.310437",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<table class=\"dataframe\">\n",
+       "<caption>A data.frame: 16 × 7</caption>\n",
+       "<thead>\n",
+       "\t<tr><th scope=col>Team</th><th scope=col>Goals</th><th scope=col>Shots.on.target</th><th scope=col>Shots.off.target</th><th scope=col>Shooting.Accuracy</th><th scope=col>X..Goals.to.shots</th><th scope=col>Total.shots..inc..Blocked.</th></tr>\n",
+       "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th></tr>\n",
+       "</thead>\n",
+       "<tbody>\n",
+       "\t<tr><td>Croatia            </td><td> 4</td><td>13</td><td>12</td><td>51.9%</td><td>16.0%</td><td> 32</td></tr>\n",
+       "\t<tr><td>Czech Republic     </td><td> 4</td><td>13</td><td>18</td><td>41.9%</td><td>12.9%</td><td> 39</td></tr>\n",
+       "\t<tr><td>Denmark            </td><td> 4</td><td>10</td><td>10</td><td>50.0%</td><td>20.0%</td><td> 27</td></tr>\n",
+       "\t<tr><td>England            </td><td> 5</td><td>11</td><td>18</td><td>50.0%</td><td>17.2%</td><td> 40</td></tr>\n",
+       "\t<tr><td>France             </td><td> 3</td><td>22</td><td>24</td><td>37.9%</td><td>6.5% </td><td> 65</td></tr>\n",
+       "\t<tr><td>Germany            </td><td>10</td><td>32</td><td>32</td><td>47.8%</td><td>15.6%</td><td> 80</td></tr>\n",
+       "\t<tr><td>Greece             </td><td> 5</td><td> 8</td><td>18</td><td>30.7%</td><td>19.2%</td><td> 32</td></tr>\n",
+       "\t<tr><td>Italy              </td><td> 6</td><td>34</td><td>45</td><td>43.0%</td><td>7.5% </td><td>110</td></tr>\n",
+       "\t<tr><td>Netherlands        </td><td> 2</td><td>12</td><td>36</td><td>25.0%</td><td>4.1% </td><td> 60</td></tr>\n",
+       "\t<tr><td>Poland             </td><td> 2</td><td>15</td><td>23</td><td>39.4%</td><td>5.2% </td><td> 48</td></tr>\n",
+       "\t<tr><td>Portugal           </td><td> 6</td><td>22</td><td>42</td><td>34.3%</td><td>9.3% </td><td> 82</td></tr>\n",
+       "\t<tr><td>Republic of Ireland</td><td> 1</td><td> 7</td><td>12</td><td>36.8%</td><td>5.2% </td><td> 28</td></tr>\n",
+       "\t<tr><td>Russia             </td><td> 5</td><td> 9</td><td>31</td><td>22.5%</td><td>12.5%</td><td> 59</td></tr>\n",
+       "\t<tr><td>Spain              </td><td>12</td><td>42</td><td>33</td><td>55.9%</td><td>16.0%</td><td>100</td></tr>\n",
+       "\t<tr><td>Sweden             </td><td> 5</td><td>17</td><td>19</td><td>47.2%</td><td>13.8%</td><td> 39</td></tr>\n",
+       "\t<tr><td>Ukraine            </td><td> 2</td><td> 7</td><td>26</td><td>21.2%</td><td>6.0% </td><td> 38</td></tr>\n",
+       "</tbody>\n",
+       "</table>\n"
+      ],
+      "text/latex": [
+       "A data.frame: 16 × 7\n",
+       "\\begin{tabular}{lllllll}\n",
+       " Team & Goals & Shots.on.target & Shots.off.target & Shooting.Accuracy & X..Goals.to.shots & Total.shots..inc..Blocked.\\\\\n",
+       " <chr> & <int> & <int> & <int> & <chr> & <chr> & <int>\\\\\n",
+       "\\hline\n",
+       "\t Croatia             &  4 & 13 & 12 & 51.9\\% & 16.0\\% &  32\\\\\n",
+       "\t Czech Republic      &  4 & 13 & 18 & 41.9\\% & 12.9\\% &  39\\\\\n",
+       "\t Denmark             &  4 & 10 & 10 & 50.0\\% & 20.0\\% &  27\\\\\n",
+       "\t England             &  5 & 11 & 18 & 50.0\\% & 17.2\\% &  40\\\\\n",
+       "\t France              &  3 & 22 & 24 & 37.9\\% & 6.5\\%  &  65\\\\\n",
+       "\t Germany             & 10 & 32 & 32 & 47.8\\% & 15.6\\% &  80\\\\\n",
+       "\t Greece              &  5 &  8 & 18 & 30.7\\% & 19.2\\% &  32\\\\\n",
+       "\t Italy               &  6 & 34 & 45 & 43.0\\% & 7.5\\%  & 110\\\\\n",
+       "\t Netherlands         &  2 & 12 & 36 & 25.0\\% & 4.1\\%  &  60\\\\\n",
+       "\t Poland              &  2 & 15 & 23 & 39.4\\% & 5.2\\%  &  48\\\\\n",
+       "\t Portugal            &  6 & 22 & 42 & 34.3\\% & 9.3\\%  &  82\\\\\n",
+       "\t Republic of Ireland &  1 &  7 & 12 & 36.8\\% & 5.2\\%  &  28\\\\\n",
+       "\t Russia              &  5 &  9 & 31 & 22.5\\% & 12.5\\% &  59\\\\\n",
+       "\t Spain               & 12 & 42 & 33 & 55.9\\% & 16.0\\% & 100\\\\\n",
+       "\t Sweden              &  5 & 17 & 19 & 47.2\\% & 13.8\\% &  39\\\\\n",
+       "\t Ukraine             &  2 &  7 & 26 & 21.2\\% & 6.0\\%  &  38\\\\\n",
+       "\\end{tabular}\n"
+      ],
+      "text/markdown": [
+       "\n",
+       "A data.frame: 16 × 7\n",
+       "\n",
+       "| Team &lt;chr&gt; | Goals &lt;int&gt; | Shots.on.target &lt;int&gt; | Shots.off.target &lt;int&gt; | Shooting.Accuracy &lt;chr&gt; | X..Goals.to.shots &lt;chr&gt; | Total.shots..inc..Blocked. &lt;int&gt; |\n",
+       "|---|---|---|---|---|---|---|\n",
+       "| Croatia             |  4 | 13 | 12 | 51.9% | 16.0% |  32 |\n",
+       "| Czech Republic      |  4 | 13 | 18 | 41.9% | 12.9% |  39 |\n",
+       "| Denmark             |  4 | 10 | 10 | 50.0% | 20.0% |  27 |\n",
+       "| England             |  5 | 11 | 18 | 50.0% | 17.2% |  40 |\n",
+       "| France              |  3 | 22 | 24 | 37.9% | 6.5%  |  65 |\n",
+       "| Germany             | 10 | 32 | 32 | 47.8% | 15.6% |  80 |\n",
+       "| Greece              |  5 |  8 | 18 | 30.7% | 19.2% |  32 |\n",
+       "| Italy               |  6 | 34 | 45 | 43.0% | 7.5%  | 110 |\n",
+       "| Netherlands         |  2 | 12 | 36 | 25.0% | 4.1%  |  60 |\n",
+       "| Poland              |  2 | 15 | 23 | 39.4% | 5.2%  |  48 |\n",
+       "| Portugal            |  6 | 22 | 42 | 34.3% | 9.3%  |  82 |\n",
+       "| Republic of Ireland |  1 |  7 | 12 | 36.8% | 5.2%  |  28 |\n",
+       "| Russia              |  5 |  9 | 31 | 22.5% | 12.5% |  59 |\n",
+       "| Spain               | 12 | 42 | 33 | 55.9% | 16.0% | 100 |\n",
+       "| Sweden              |  5 | 17 | 19 | 47.2% | 13.8% |  39 |\n",
+       "| Ukraine             |  2 |  7 | 26 | 21.2% | 6.0%  |  38 |\n",
+       "\n"
+      ],
+      "text/plain": [
+       "   Team                Goals Shots.on.target Shots.off.target Shooting.Accuracy\n",
+       "1  Croatia              4    13              12               51.9%            \n",
+       "2  Czech Republic       4    13              18               41.9%            \n",
+       "3  Denmark              4    10              10               50.0%            \n",
+       "4  England              5    11              18               50.0%            \n",
+       "5  France               3    22              24               37.9%            \n",
+       "6  Germany             10    32              32               47.8%            \n",
+       "7  Greece               5     8              18               30.7%            \n",
+       "8  Italy                6    34              45               43.0%            \n",
+       "9  Netherlands          2    12              36               25.0%            \n",
+       "10 Poland               2    15              23               39.4%            \n",
+       "11 Portugal             6    22              42               34.3%            \n",
+       "12 Republic of Ireland  1     7              12               36.8%            \n",
+       "13 Russia               5     9              31               22.5%            \n",
+       "14 Spain               12    42              33               55.9%            \n",
+       "15 Sweden               5    17              19               47.2%            \n",
+       "16 Ukraine              2     7              26               21.2%            \n",
+       "   X..Goals.to.shots Total.shots..inc..Blocked.\n",
+       "1  16.0%              32                       \n",
+       "2  12.9%              39                       \n",
+       "3  20.0%              27                       \n",
+       "4  17.2%              40                       \n",
+       "5  6.5%               65                       \n",
+       "6  15.6%              80                       \n",
+       "7  19.2%              32                       \n",
+       "8  7.5%              110                       \n",
+       "9  4.1%               60                       \n",
+       "10 5.2%               48                       \n",
+       "11 9.3%               82                       \n",
+       "12 5.2%               28                       \n",
+       "13 12.5%              59                       \n",
+       "14 16.0%             100                       \n",
+       "15 13.8%              39                       \n",
+       "16 6.0%               38                       "
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "stats %>% select(1:7)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "299e143a",
+   "metadata": {
+    "papermill": {
+     "duration": 0.010746,
+     "end_time": "2023-05-27T20:04:20.385108",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:20.374362",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "Question 9. Select all columns except the last 3."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "4f575c6f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-05-27T20:04:20.410179Z",
+     "iopub.status.busy": "2023-05-27T20:04:20.408591Z",
+     "iopub.status.idle": "2023-05-27T20:04:20.477403Z",
+     "shell.execute_reply": "2023-05-27T20:04:20.474612Z"
+    },
+    "papermill": {
+     "duration": 0.084993,
+     "end_time": "2023-05-27T20:04:20.480820",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:20.395827",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<table class=\"dataframe\">\n",
+       "<caption>A data.frame: 16 × 32</caption>\n",
+       "<thead>\n",
+       "\t<tr><th scope=col>Team</th><th scope=col>Goals</th><th scope=col>Shots.on.target</th><th scope=col>Shots.off.target</th><th scope=col>Shooting.Accuracy</th><th scope=col>X..Goals.to.shots</th><th scope=col>Total.shots..inc..Blocked.</th><th scope=col>Hit.Woodwork</th><th scope=col>Penalty.goals</th><th scope=col>Penalties.not.scored</th><th scope=col>⋯</th><th scope=col>Clean.Sheets</th><th scope=col>Blocks</th><th scope=col>Goals.conceded</th><th scope=col>Saves.made</th><th scope=col>Saves.to.shots.ratio</th><th scope=col>Fouls.Won</th><th scope=col>Fouls.Conceded</th><th scope=col>Offsides</th><th scope=col>Yellow.Cards</th><th scope=col>Red.Cards</th></tr>\n",
+       "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>⋯</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th></tr>\n",
+       "</thead>\n",
+       "<tbody>\n",
+       "\t<tr><td>Croatia            </td><td> 4</td><td>13</td><td>12</td><td>51.9%</td><td>16.0%</td><td> 32</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>10</td><td>3</td><td>13</td><td>81.3%</td><td> 41</td><td>62</td><td> 2</td><td> 9</td><td>0</td></tr>\n",
+       "\t<tr><td>Czech Republic     </td><td> 4</td><td>13</td><td>18</td><td>41.9%</td><td>12.9%</td><td> 39</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>1</td><td>10</td><td>6</td><td> 9</td><td>60.1%</td><td> 53</td><td>73</td><td> 8</td><td> 7</td><td>0</td></tr>\n",
+       "\t<tr><td>Denmark            </td><td> 4</td><td>10</td><td>10</td><td>50.0%</td><td>20.0%</td><td> 27</td><td>1</td><td>0</td><td>0</td><td>⋯</td><td>1</td><td>10</td><td>5</td><td>10</td><td>66.7%</td><td> 25</td><td>38</td><td> 8</td><td> 4</td><td>0</td></tr>\n",
+       "\t<tr><td>England            </td><td> 5</td><td>11</td><td>18</td><td>50.0%</td><td>17.2%</td><td> 40</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>2</td><td>29</td><td>3</td><td>22</td><td>88.1%</td><td> 43</td><td>45</td><td> 6</td><td> 5</td><td>0</td></tr>\n",
+       "\t<tr><td>France             </td><td> 3</td><td>22</td><td>24</td><td>37.9%</td><td>6.5% </td><td> 65</td><td>1</td><td>0</td><td>0</td><td>⋯</td><td>1</td><td> 7</td><td>5</td><td> 6</td><td>54.6%</td><td> 36</td><td>51</td><td> 5</td><td> 6</td><td>0</td></tr>\n",
+       "\t<tr><td>Germany            </td><td>10</td><td>32</td><td>32</td><td>47.8%</td><td>15.6%</td><td> 80</td><td>2</td><td>1</td><td>0</td><td>⋯</td><td>1</td><td>11</td><td>6</td><td>10</td><td>62.6%</td><td> 63</td><td>49</td><td>12</td><td> 4</td><td>0</td></tr>\n",
+       "\t<tr><td>Greece             </td><td> 5</td><td> 8</td><td>18</td><td>30.7%</td><td>19.2%</td><td> 32</td><td>1</td><td>1</td><td>1</td><td>⋯</td><td>1</td><td>23</td><td>7</td><td>13</td><td>65.1%</td><td> 67</td><td>48</td><td>12</td><td> 9</td><td>1</td></tr>\n",
+       "\t<tr><td>Italy              </td><td> 6</td><td>34</td><td>45</td><td>43.0%</td><td>7.5% </td><td>110</td><td>2</td><td>0</td><td>0</td><td>⋯</td><td>2</td><td>18</td><td>7</td><td>20</td><td>74.1%</td><td>101</td><td>89</td><td>16</td><td>16</td><td>0</td></tr>\n",
+       "\t<tr><td>Netherlands        </td><td> 2</td><td>12</td><td>36</td><td>25.0%</td><td>4.1% </td><td> 60</td><td>2</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td> 9</td><td>5</td><td>12</td><td>70.6%</td><td> 35</td><td>30</td><td> 3</td><td> 5</td><td>0</td></tr>\n",
+       "\t<tr><td>Poland             </td><td> 2</td><td>15</td><td>23</td><td>39.4%</td><td>5.2% </td><td> 48</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td> 8</td><td>3</td><td> 6</td><td>66.7%</td><td> 48</td><td>56</td><td> 3</td><td> 7</td><td>1</td></tr>\n",
+       "\t<tr><td>Portugal           </td><td> 6</td><td>22</td><td>42</td><td>34.3%</td><td>9.3% </td><td> 82</td><td>6</td><td>0</td><td>0</td><td>⋯</td><td>2</td><td>11</td><td>4</td><td>10</td><td>71.5%</td><td> 73</td><td>90</td><td>10</td><td>12</td><td>0</td></tr>\n",
+       "\t<tr><td>Republic of Ireland</td><td> 1</td><td> 7</td><td>12</td><td>36.8%</td><td>5.2% </td><td> 28</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td>23</td><td>9</td><td>17</td><td>65.4%</td><td> 43</td><td>51</td><td>11</td><td> 6</td><td>1</td></tr>\n",
+       "\t<tr><td>Russia             </td><td> 5</td><td> 9</td><td>31</td><td>22.5%</td><td>12.5%</td><td> 59</td><td>2</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td> 8</td><td>3</td><td>10</td><td>77.0%</td><td> 34</td><td>43</td><td> 4</td><td> 6</td><td>0</td></tr>\n",
+       "\t<tr><td>Spain              </td><td>12</td><td>42</td><td>33</td><td>55.9%</td><td>16.0%</td><td>100</td><td>0</td><td>1</td><td>0</td><td>⋯</td><td>5</td><td> 8</td><td>1</td><td>15</td><td>93.8%</td><td>102</td><td>83</td><td>19</td><td>11</td><td>0</td></tr>\n",
+       "\t<tr><td>Sweden             </td><td> 5</td><td>17</td><td>19</td><td>47.2%</td><td>13.8%</td><td> 39</td><td>3</td><td>0</td><td>0</td><td>⋯</td><td>1</td><td>12</td><td>5</td><td> 8</td><td>61.6%</td><td> 35</td><td>51</td><td> 7</td><td> 7</td><td>0</td></tr>\n",
+       "\t<tr><td>Ukraine            </td><td> 2</td><td> 7</td><td>26</td><td>21.2%</td><td>6.0% </td><td> 38</td><td>0</td><td>0</td><td>0</td><td>⋯</td><td>0</td><td> 4</td><td>4</td><td>13</td><td>76.5%</td><td> 48</td><td>31</td><td> 4</td><td> 5</td><td>0</td></tr>\n",
+       "</tbody>\n",
+       "</table>\n"
+      ],
+      "text/latex": [
+       "A data.frame: 16 × 32\n",
+       "\\begin{tabular}{lllllllllllllllllllll}\n",
+       " Team & Goals & Shots.on.target & Shots.off.target & Shooting.Accuracy & X..Goals.to.shots & Total.shots..inc..Blocked. & Hit.Woodwork & Penalty.goals & Penalties.not.scored & ⋯ & Clean.Sheets & Blocks & Goals.conceded & Saves.made & Saves.to.shots.ratio & Fouls.Won & Fouls.Conceded & Offsides & Yellow.Cards & Red.Cards\\\\\n",
+       " <chr> & <int> & <int> & <int> & <chr> & <chr> & <int> & <int> & <int> & <int> & ⋯ & <int> & <int> & <int> & <int> & <chr> & <int> & <int> & <int> & <int> & <int>\\\\\n",
+       "\\hline\n",
+       "\t Croatia             &  4 & 13 & 12 & 51.9\\% & 16.0\\% &  32 & 0 & 0 & 0 & ⋯ & 0 & 10 & 3 & 13 & 81.3\\% &  41 & 62 &  2 &  9 & 0\\\\\n",
+       "\t Czech Republic      &  4 & 13 & 18 & 41.9\\% & 12.9\\% &  39 & 0 & 0 & 0 & ⋯ & 1 & 10 & 6 &  9 & 60.1\\% &  53 & 73 &  8 &  7 & 0\\\\\n",
+       "\t Denmark             &  4 & 10 & 10 & 50.0\\% & 20.0\\% &  27 & 1 & 0 & 0 & ⋯ & 1 & 10 & 5 & 10 & 66.7\\% &  25 & 38 &  8 &  4 & 0\\\\\n",
+       "\t England             &  5 & 11 & 18 & 50.0\\% & 17.2\\% &  40 & 0 & 0 & 0 & ⋯ & 2 & 29 & 3 & 22 & 88.1\\% &  43 & 45 &  6 &  5 & 0\\\\\n",
+       "\t France              &  3 & 22 & 24 & 37.9\\% & 6.5\\%  &  65 & 1 & 0 & 0 & ⋯ & 1 &  7 & 5 &  6 & 54.6\\% &  36 & 51 &  5 &  6 & 0\\\\\n",
+       "\t Germany             & 10 & 32 & 32 & 47.8\\% & 15.6\\% &  80 & 2 & 1 & 0 & ⋯ & 1 & 11 & 6 & 10 & 62.6\\% &  63 & 49 & 12 &  4 & 0\\\\\n",
+       "\t Greece              &  5 &  8 & 18 & 30.7\\% & 19.2\\% &  32 & 1 & 1 & 1 & ⋯ & 1 & 23 & 7 & 13 & 65.1\\% &  67 & 48 & 12 &  9 & 1\\\\\n",
+       "\t Italy               &  6 & 34 & 45 & 43.0\\% & 7.5\\%  & 110 & 2 & 0 & 0 & ⋯ & 2 & 18 & 7 & 20 & 74.1\\% & 101 & 89 & 16 & 16 & 0\\\\\n",
+       "\t Netherlands         &  2 & 12 & 36 & 25.0\\% & 4.1\\%  &  60 & 2 & 0 & 0 & ⋯ & 0 &  9 & 5 & 12 & 70.6\\% &  35 & 30 &  3 &  5 & 0\\\\\n",
+       "\t Poland              &  2 & 15 & 23 & 39.4\\% & 5.2\\%  &  48 & 0 & 0 & 0 & ⋯ & 0 &  8 & 3 &  6 & 66.7\\% &  48 & 56 &  3 &  7 & 1\\\\\n",
+       "\t Portugal            &  6 & 22 & 42 & 34.3\\% & 9.3\\%  &  82 & 6 & 0 & 0 & ⋯ & 2 & 11 & 4 & 10 & 71.5\\% &  73 & 90 & 10 & 12 & 0\\\\\n",
+       "\t Republic of Ireland &  1 &  7 & 12 & 36.8\\% & 5.2\\%  &  28 & 0 & 0 & 0 & ⋯ & 0 & 23 & 9 & 17 & 65.4\\% &  43 & 51 & 11 &  6 & 1\\\\\n",
+       "\t Russia              &  5 &  9 & 31 & 22.5\\% & 12.5\\% &  59 & 2 & 0 & 0 & ⋯ & 0 &  8 & 3 & 10 & 77.0\\% &  34 & 43 &  4 &  6 & 0\\\\\n",
+       "\t Spain               & 12 & 42 & 33 & 55.9\\% & 16.0\\% & 100 & 0 & 1 & 0 & ⋯ & 5 &  8 & 1 & 15 & 93.8\\% & 102 & 83 & 19 & 11 & 0\\\\\n",
+       "\t Sweden              &  5 & 17 & 19 & 47.2\\% & 13.8\\% &  39 & 3 & 0 & 0 & ⋯ & 1 & 12 & 5 &  8 & 61.6\\% &  35 & 51 &  7 &  7 & 0\\\\\n",
+       "\t Ukraine             &  2 &  7 & 26 & 21.2\\% & 6.0\\%  &  38 & 0 & 0 & 0 & ⋯ & 0 &  4 & 4 & 13 & 76.5\\% &  48 & 31 &  4 &  5 & 0\\\\\n",
+       "\\end{tabular}\n"
+      ],
+      "text/markdown": [
+       "\n",
+       "A data.frame: 16 × 32\n",
+       "\n",
+       "| Team &lt;chr&gt; | Goals &lt;int&gt; | Shots.on.target &lt;int&gt; | Shots.off.target &lt;int&gt; | Shooting.Accuracy &lt;chr&gt; | X..Goals.to.shots &lt;chr&gt; | Total.shots..inc..Blocked. &lt;int&gt; | Hit.Woodwork &lt;int&gt; | Penalty.goals &lt;int&gt; | Penalties.not.scored &lt;int&gt; | ⋯ ⋯ | Clean.Sheets &lt;int&gt; | Blocks &lt;int&gt; | Goals.conceded &lt;int&gt; | Saves.made &lt;int&gt; | Saves.to.shots.ratio &lt;chr&gt; | Fouls.Won &lt;int&gt; | Fouls.Conceded &lt;int&gt; | Offsides &lt;int&gt; | Yellow.Cards &lt;int&gt; | Red.Cards &lt;int&gt; |\n",
+       "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n",
+       "| Croatia             |  4 | 13 | 12 | 51.9% | 16.0% |  32 | 0 | 0 | 0 | ⋯ | 0 | 10 | 3 | 13 | 81.3% |  41 | 62 |  2 |  9 | 0 |\n",
+       "| Czech Republic      |  4 | 13 | 18 | 41.9% | 12.9% |  39 | 0 | 0 | 0 | ⋯ | 1 | 10 | 6 |  9 | 60.1% |  53 | 73 |  8 |  7 | 0 |\n",
+       "| Denmark             |  4 | 10 | 10 | 50.0% | 20.0% |  27 | 1 | 0 | 0 | ⋯ | 1 | 10 | 5 | 10 | 66.7% |  25 | 38 |  8 |  4 | 0 |\n",
+       "| England             |  5 | 11 | 18 | 50.0% | 17.2% |  40 | 0 | 0 | 0 | ⋯ | 2 | 29 | 3 | 22 | 88.1% |  43 | 45 |  6 |  5 | 0 |\n",
+       "| France              |  3 | 22 | 24 | 37.9% | 6.5%  |  65 | 1 | 0 | 0 | ⋯ | 1 |  7 | 5 |  6 | 54.6% |  36 | 51 |  5 |  6 | 0 |\n",
+       "| Germany             | 10 | 32 | 32 | 47.8% | 15.6% |  80 | 2 | 1 | 0 | ⋯ | 1 | 11 | 6 | 10 | 62.6% |  63 | 49 | 12 |  4 | 0 |\n",
+       "| Greece              |  5 |  8 | 18 | 30.7% | 19.2% |  32 | 1 | 1 | 1 | ⋯ | 1 | 23 | 7 | 13 | 65.1% |  67 | 48 | 12 |  9 | 1 |\n",
+       "| Italy               |  6 | 34 | 45 | 43.0% | 7.5%  | 110 | 2 | 0 | 0 | ⋯ | 2 | 18 | 7 | 20 | 74.1% | 101 | 89 | 16 | 16 | 0 |\n",
+       "| Netherlands         |  2 | 12 | 36 | 25.0% | 4.1%  |  60 | 2 | 0 | 0 | ⋯ | 0 |  9 | 5 | 12 | 70.6% |  35 | 30 |  3 |  5 | 0 |\n",
+       "| Poland              |  2 | 15 | 23 | 39.4% | 5.2%  |  48 | 0 | 0 | 0 | ⋯ | 0 |  8 | 3 |  6 | 66.7% |  48 | 56 |  3 |  7 | 1 |\n",
+       "| Portugal            |  6 | 22 | 42 | 34.3% | 9.3%  |  82 | 6 | 0 | 0 | ⋯ | 2 | 11 | 4 | 10 | 71.5% |  73 | 90 | 10 | 12 | 0 |\n",
+       "| Republic of Ireland |  1 |  7 | 12 | 36.8% | 5.2%  |  28 | 0 | 0 | 0 | ⋯ | 0 | 23 | 9 | 17 | 65.4% |  43 | 51 | 11 |  6 | 1 |\n",
+       "| Russia              |  5 |  9 | 31 | 22.5% | 12.5% |  59 | 2 | 0 | 0 | ⋯ | 0 |  8 | 3 | 10 | 77.0% |  34 | 43 |  4 |  6 | 0 |\n",
+       "| Spain               | 12 | 42 | 33 | 55.9% | 16.0% | 100 | 0 | 1 | 0 | ⋯ | 5 |  8 | 1 | 15 | 93.8% | 102 | 83 | 19 | 11 | 0 |\n",
+       "| Sweden              |  5 | 17 | 19 | 47.2% | 13.8% |  39 | 3 | 0 | 0 | ⋯ | 1 | 12 | 5 |  8 | 61.6% |  35 | 51 |  7 |  7 | 0 |\n",
+       "| Ukraine             |  2 |  7 | 26 | 21.2% | 6.0%  |  38 | 0 | 0 | 0 | ⋯ | 0 |  4 | 4 | 13 | 76.5% |  48 | 31 |  4 |  5 | 0 |\n",
+       "\n"
+      ],
+      "text/plain": [
+       "   Team                Goals Shots.on.target Shots.off.target Shooting.Accuracy\n",
+       "1  Croatia              4    13              12               51.9%            \n",
+       "2  Czech Republic       4    13              18               41.9%            \n",
+       "3  Denmark              4    10              10               50.0%            \n",
+       "4  England              5    11              18               50.0%            \n",
+       "5  France               3    22              24               37.9%            \n",
+       "6  Germany             10    32              32               47.8%            \n",
+       "7  Greece               5     8              18               30.7%            \n",
+       "8  Italy                6    34              45               43.0%            \n",
+       "9  Netherlands          2    12              36               25.0%            \n",
+       "10 Poland               2    15              23               39.4%            \n",
+       "11 Portugal             6    22              42               34.3%            \n",
+       "12 Republic of Ireland  1     7              12               36.8%            \n",
+       "13 Russia               5     9              31               22.5%            \n",
+       "14 Spain               12    42              33               55.9%            \n",
+       "15 Sweden               5    17              19               47.2%            \n",
+       "16 Ukraine              2     7              26               21.2%            \n",
+       "   X..Goals.to.shots Total.shots..inc..Blocked. Hit.Woodwork Penalty.goals\n",
+       "1  16.0%              32                        0            0            \n",
+       "2  12.9%              39                        0            0            \n",
+       "3  20.0%              27                        1            0            \n",
+       "4  17.2%              40                        0            0            \n",
+       "5  6.5%               65                        1            0            \n",
+       "6  15.6%              80                        2            1            \n",
+       "7  19.2%              32                        1            1            \n",
+       "8  7.5%              110                        2            0            \n",
+       "9  4.1%               60                        2            0            \n",
+       "10 5.2%               48                        0            0            \n",
+       "11 9.3%               82                        6            0            \n",
+       "12 5.2%               28                        0            0            \n",
+       "13 12.5%              59                        2            0            \n",
+       "14 16.0%             100                        0            1            \n",
+       "15 13.8%              39                        3            0            \n",
+       "16 6.0%               38                        0            0            \n",
+       "   Penalties.not.scored ⋯ Clean.Sheets Blocks Goals.conceded Saves.made\n",
+       "1  0                    ⋯ 0            10     3              13        \n",
+       "2  0                    ⋯ 1            10     6               9        \n",
+       "3  0                    ⋯ 1            10     5              10        \n",
+       "4  0                    ⋯ 2            29     3              22        \n",
+       "5  0                    ⋯ 1             7     5               6        \n",
+       "6  0                    ⋯ 1            11     6              10        \n",
+       "7  1                    ⋯ 1            23     7              13        \n",
+       "8  0                    ⋯ 2            18     7              20        \n",
+       "9  0                    ⋯ 0             9     5              12        \n",
+       "10 0                    ⋯ 0             8     3               6        \n",
+       "11 0                    ⋯ 2            11     4              10        \n",
+       "12 0                    ⋯ 0            23     9              17        \n",
+       "13 0                    ⋯ 0             8     3              10        \n",
+       "14 0                    ⋯ 5             8     1              15        \n",
+       "15 0                    ⋯ 1            12     5               8        \n",
+       "16 0                    ⋯ 0             4     4              13        \n",
+       "   Saves.to.shots.ratio Fouls.Won Fouls.Conceded Offsides Yellow.Cards\n",
+       "1  81.3%                 41       62              2        9          \n",
+       "2  60.1%                 53       73              8        7          \n",
+       "3  66.7%                 25       38              8        4          \n",
+       "4  88.1%                 43       45              6        5          \n",
+       "5  54.6%                 36       51              5        6          \n",
+       "6  62.6%                 63       49             12        4          \n",
+       "7  65.1%                 67       48             12        9          \n",
+       "8  74.1%                101       89             16       16          \n",
+       "9  70.6%                 35       30              3        5          \n",
+       "10 66.7%                 48       56              3        7          \n",
+       "11 71.5%                 73       90             10       12          \n",
+       "12 65.4%                 43       51             11        6          \n",
+       "13 77.0%                 34       43              4        6          \n",
+       "14 93.8%                102       83             19       11          \n",
+       "15 61.6%                 35       51              7        7          \n",
+       "16 76.5%                 48       31              4        5          \n",
+       "   Red.Cards\n",
+       "1  0        \n",
+       "2  0        \n",
+       "3  0        \n",
+       "4  0        \n",
+       "5  0        \n",
+       "6  0        \n",
+       "7  1        \n",
+       "8  0        \n",
+       "9  0        \n",
+       "10 1        \n",
+       "11 0        \n",
+       "12 1        \n",
+       "13 0        \n",
+       "14 0        \n",
+       "15 0        \n",
+       "16 0        "
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "stats %>% select (-c(Subs.on,Subs.off,Players.Used))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "694be21c",
+   "metadata": {
+    "papermill": {
+     "duration": 0.011435,
+     "end_time": "2023-05-27T20:04:20.504122",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:20.492687",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "Question 10. Present only the Shooting Accuracy from England, Italy and Russia."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "4047b8e3",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-05-27T20:04:20.531365Z",
+     "iopub.status.busy": "2023-05-27T20:04:20.529524Z",
+     "iopub.status.idle": "2023-05-27T20:04:20.560157Z",
+     "shell.execute_reply": "2023-05-27T20:04:20.557783Z"
+    },
+    "papermill": {
+     "duration": 0.047404,
+     "end_time": "2023-05-27T20:04:20.563300",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:20.515896",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<table class=\"dataframe\">\n",
+       "<caption>A data.frame: 3 × 2</caption>\n",
+       "<thead>\n",
+       "\t<tr><th scope=col>Team</th><th scope=col>Shooting.Accuracy</th></tr>\n",
+       "\t<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>\n",
+       "</thead>\n",
+       "<tbody>\n",
+       "\t<tr><td>England</td><td>50.0%</td></tr>\n",
+       "\t<tr><td>Italy  </td><td>43.0%</td></tr>\n",
+       "\t<tr><td>Russia </td><td>22.5%</td></tr>\n",
+       "</tbody>\n",
+       "</table>\n"
+      ],
+      "text/latex": [
+       "A data.frame: 3 × 2\n",
+       "\\begin{tabular}{ll}\n",
+       " Team & Shooting.Accuracy\\\\\n",
+       " <chr> & <chr>\\\\\n",
+       "\\hline\n",
+       "\t England & 50.0\\%\\\\\n",
+       "\t Italy   & 43.0\\%\\\\\n",
+       "\t Russia  & 22.5\\%\\\\\n",
+       "\\end{tabular}\n"
+      ],
+      "text/markdown": [
+       "\n",
+       "A data.frame: 3 × 2\n",
+       "\n",
+       "| Team &lt;chr&gt; | Shooting.Accuracy &lt;chr&gt; |\n",
+       "|---|---|\n",
+       "| England | 50.0% |\n",
+       "| Italy   | 43.0% |\n",
+       "| Russia  | 22.5% |\n",
+       "\n"
+      ],
+      "text/plain": [
+       "  Team    Shooting.Accuracy\n",
+       "1 England 50.0%            \n",
+       "2 Italy   43.0%            \n",
+       "3 Russia  22.5%            "
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "stats %>% select(Team, Shooting.Accuracy) %>% filter (Team == \"England\" | Team == \"Italy\" | Team == \"Russia\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "46a453a7",
+   "metadata": {
+    "papermill": {
+     "duration": 0.011466,
+     "end_time": "2023-05-27T20:04:20.586605",
+     "exception": false,
+     "start_time": "2023-05-27T20:04:20.575139",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "Challenge by [Data In Motion](https://d-i-motion.com/lessons/challenge-2-eurocup-soccer/)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "R",
+   "language": "R",
+   "name": "ir"
+  },
+  "language_info": {
+   "codemirror_mode": "r",
+   "file_extension": ".r",
+   "mimetype": "text/x-r-source",
+   "name": "R",
+   "pygments_lexer": "r",
+   "version": "4.0.5"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 7.291517,
+   "end_time": "2023-05-27T20:04:20.722051",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2023-05-27T20:04:13.430534",
+   "version": "2.4.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
